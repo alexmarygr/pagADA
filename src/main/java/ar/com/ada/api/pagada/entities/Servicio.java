@@ -24,11 +24,11 @@ public class Servicio {
     @ManyToOne
     @JoinColumn(name = "tipo_servicio_id", referencedColumnName = "tipo_servicio_id")
     private TipoServicio tipoServicio;
-    @Column(name = "tipo_comprobante")
+    @Column(name = "tipo_comprobante_id")
     private TipoComprobanteEnum tipoComprobante;
     @Column(name = "fecha_emision")
     private Date fechaEmision;
-    @Column(name = "fecha_vencimento")
+    @Column(name = "fecha_vencimiento")
     private Date fechaVencimiento;
     private BigDecimal importe;
     @Column(name = "codigo_barras")
