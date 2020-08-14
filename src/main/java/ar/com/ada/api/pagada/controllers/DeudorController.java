@@ -12,6 +12,7 @@ import ar.com.ada.api.pagada.entities.Deudor;
 import ar.com.ada.api.pagada.models.request.DeudorRequest;
 import ar.com.ada.api.pagada.models.response.GenericResponse;
 import ar.com.ada.api.pagada.services.DeudorService;
+import ar.com.ada.api.pagada.services.DeudorService.DeudorValidacionEnum;
 
 @RestController
 public class DeudorController {
@@ -26,23 +27,29 @@ public class DeudorController {
     }
 
     @PostMapping("/api/deudores")
-    public ResponseEntity<GenericResponse> crearDeudor(@RequestBody DeudorRequest d){
-        GenericResponse respuesta = new GenericResponse();
+    public ResponseEntity<GenericResponse> crearDeudor(@RequestBody DeudorRequest dr){
+        GenericResponse gr = new GenericResponse();
 
-        Deudor deudor = deudorService.crearDeudor(d.paisId,d.tipoIdImpositivo,d.idImpositivo,d.nombre);
+        DeudorValidacionEnum resultadoValidacion = deudorService.validarDeudorInfo(dr.paisId, dr.tipoIdImpositivo,
+                dr.idImpositivo, dr.nombre);
+        if (resultadoValidacion != DeudorValidacionEnum.OK) {
+            gr.isOk = false;
+            gr.message = "No se pudo validar el deudor " + resultadoValidacion.toString();
 
-        if( deudor.getDeudorId() != null){
-
-            respuesta.isOk = true;
-            respuesta.id = deudor.getDeudorId();
-            respuesta.message = "Deudor cargado con éxito.";
-            return ResponseEntity.ok(respuesta);
-
-        }else{
-            respuesta.isOk = false;
-            respuesta.message = "No se pudo cargar el deudor.";
-            return ResponseEntity.badRequest().body(respuesta);
+            return ResponseEntity.badRequest().body(gr); // http 400
         }
+        //
+        Deudor deudor = deudorService.crearDeudor(dr.paisId, dr.tipoIdImpositivo, dr.idImpositivo, dr.nombre);
+
+        if (deudor != null) {
+            gr.isOk = true;
+            gr.id = deudor.getDeudorId();
+            gr.message = "Deudor cargado con éxito.";
+            return ResponseEntity.ok(gr);
+        }
+        gr.isOk = false;
+        gr.message = "No se pudo cargar al Deudor.";
+        return ResponseEntity.badRequest().body(gr);
     }
 
 }

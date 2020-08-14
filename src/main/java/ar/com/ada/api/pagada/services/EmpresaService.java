@@ -6,18 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ar.com.ada.api.pagada.entities.Empresa;
-import ar.com.ada.api.pagada.entities.Pais.TipoIdImpositivoEnum;
 import ar.com.ada.api.pagada.repos.EmpresaRepository;
 
 @Service
 public class EmpresaService {
 
     @Autowired
-	EmpresaRepository empresaRepo;
+	EmpresaRepository empresaRepository;
 
 	public List<Empresa> listarEmpresas() {
 
-		return empresaRepo.findAll();
+		return empresaRepository.findAll();
 	}
 
 	public void crearEmpresa(Empresa emp) {

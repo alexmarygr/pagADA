@@ -33,6 +33,39 @@ public class DeudorService {
         deudor.setNombre(nombre);
         guardar(deudor);
         return deudor;
-	}
+    }
+    
+    public DeudorValidacionEnum validarDeudorInfo(Integer paisId, TipoIdImpositivoEnum tipoIdImpositivo,
+            String idImpositivo, String nombre) {
+        // Si es nulo, error
+        if (idImpositivo == null)
+            return DeudorValidacionEnum.ID_IMPOSITIVO_INVALIDO;
+
+        // ID impositivo al menos de 11 digitos y maximo 20
+        if (!(idImpositivo.length() >= 11 && idImpositivo.length() <= 20))
+            return DeudorValidacionEnum.ID_IMPOSITIVO_INVALIDO;
+
+        
+        for (char caracter : idImpositivo.toCharArray()) {
+            if (!Character.isDigit(caracter))
+                return DeudorValidacionEnum.ID_IMPOSITIVO_INVALIDO;
+
+        }
+
+        if (nombre == null)
+            return DeudorValidacionEnum.NOMBRE_INVALIDO;
+
+        if (nombre.length() > 100)
+            return DeudorValidacionEnum.NOMBRE_INVALIDO;
+
+        // Si llego hassta aqui, es que todo lo de arriba, era valido
+        return DeudorValidacionEnum.OK;
+    }
+
+    public enum DeudorValidacionEnum {
+        OK, // Cuando esta todo validado ok
+        NOMBRE_INVALIDO, // Nombre tenga algun problema
+        ID_IMPOSITIVO_INVALIDO // ID impositivo tenga un problema
+    }
 
 }
