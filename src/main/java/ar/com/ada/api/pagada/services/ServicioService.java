@@ -85,6 +85,10 @@ public class ServicioService {
 
 	public List<Servicio> PendientesPorEmpresaIdYDeudorId(Integer empresa, Integer deudor) {
 		return servicioRepo.findAllPendientesByEmpresaIdYDeudorId(empresa,deudor);
-	}
+    }
+    
+    public List<Servicio> historicoPorEmpresaIdYDeudorId(Integer empresaId, Integer deudorId){
+        return  servicioRepo.findAllEmpresaIdYDeudorId(empresaId,deudorId);
+    }
 
 }
