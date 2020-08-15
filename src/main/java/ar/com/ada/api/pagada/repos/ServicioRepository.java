@@ -22,4 +22,7 @@ public interface ServicioRepository extends JpaRepository<Servicio,Integer>{
     @Query("select s from Servicio s where s.empresa.empresaId = :empresaId and s.deudor.deudorId = :deudorId")
 	public List<Servicio> findAllEmpresaIdYDeudorId(Integer empresaId, Integer deudorId);
 
+    @Query("select s from Servicio s where s.codigoBarras = :codigoBarras")
+	public List<Servicio> findAllByCodigoBarras(String codigoBarras);
+
 }

@@ -91,4 +91,8 @@ public class ServicioService {
         return  servicioRepo.findAllEmpresaIdYDeudorId(empresaId,deudorId);
     }
 
+	public List<Servicio> listarPorCodigoBarras(String codigoBarras) {
+		return servicioRepo.findAllByCodigoBarras(codigoBarras);
+	}
+
 }

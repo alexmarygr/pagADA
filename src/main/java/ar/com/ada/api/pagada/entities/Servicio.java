@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.*;
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 //El servico mes a mes
 @Entity
 @Table(name = "servicio")
@@ -39,6 +41,7 @@ public class Servicio {
     private EstadoEnum estadoId;
 
     // Owner de la relacion
+    @JsonIgnore
     @OneToOne(mappedBy = "servicio", cascade = CascadeType.ALL)
     private Pago pago;
 

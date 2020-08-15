@@ -79,20 +79,25 @@ public class ServicioController {
     @GetMapping("/api/servicios")
     public ResponseEntity<List<Servicio>> listarServicios( @RequestParam(name = "empresa", required = false) Integer empresa, 
     @RequestParam(name = "deudor", required = false) Integer deudor,
-    @RequestParam(name = "historico", required = false) boolean historico){
+    @RequestParam(name = "historico", required = false) boolean historico,
+    @RequestParam(name = "codigo", required = false) String codigo){
         
         List<Servicio> servicios = new ArrayList<>();
 
-        if(empresa == null){
-            servicios = servicioService.listarServicios();
-        }else if(deudor == null){
+        if(codigo != null){
+            servicios = servicioService.listarPorCodigoBarras(codigo);
+        }else if(empresa != null && deudor == null){
             servicios = servicioService.listarServiciosPendientesPorEmpresaId(empresa);
-        }else if (historico == true){
+        }else if(empresa != null && deudor != null && historico == false){
+            servicios = servicioService.PendientesPorEmpresaIdYDeudorId(empresa,deudor);
+        }else if (empresa != null && deudor != null && historico == true){
             servicios = servicioService.historicoPorEmpresaIdYDeudorId(empresa,deudor);
         }else{
-            servicios = servicioService.PendientesPorEmpresaIdYDeudorId(empresa,deudor);
+            servicios = servicioService.listarServicios();
         }
         return ResponseEntity.ok(servicios);
     }
+
+    
 
 }
