@@ -75,4 +75,16 @@ public class ServicioService {
         return servicioRepo.findAll();
     }
 
+	public List<Servicio> listarServiciosPorEmpresaId(Integer empresaId) {
+		return servicioRepo.findAllByEmpresaId(empresaId);
+    }
+    
+    public List<Servicio> listarServiciosPendientesPorEmpresaId(Integer empresaId) {
+		return servicioRepo.findAllPendientesByEmpresaId(empresaId);
+	}
+
+	public List<Servicio> PendientesPorEmpresaIdYDeudorId(Integer empresa, Integer deudor) {
+		return servicioRepo.findAllPendientesByEmpresaIdYDeudorId(empresa,deudor);
+	}
+
 }

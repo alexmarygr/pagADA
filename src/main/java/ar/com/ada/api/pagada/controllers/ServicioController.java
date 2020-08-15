@@ -1,5 +1,6 @@
 package ar.com.ada.api.pagada.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import ar.com.ada.api.pagada.entities.Servicio;
@@ -75,8 +77,19 @@ public class ServicioController {
 
 
     @GetMapping("/api/servicios")
-    public ResponseEntity<List<Servicio>> listarServicios(){
-        List<Servicio> servicios = servicioService.listarServicios();
+    public ResponseEntity<List<Servicio>> listarServicios( @RequestParam(name = "empresa", required = false) Integer empresa, 
+    @RequestParam(name = "deudor", required = false) Integer deudor){
+        
+        List<Servicio> servicios = new ArrayList<>();
+
+        if(empresa == null){
+            servicios = servicioService.listarServicios();
+        }else if(deudor == null){
+            servicios = servicioService.listarServiciosPendientesPorEmpresaId(empresa);
+        }else{
+            servicios = servicioService.PendientesPorEmpresaIdYDeudorId(empresa,deudor);
+        }
+        
         return ResponseEntity.ok(servicios);
     }
 
