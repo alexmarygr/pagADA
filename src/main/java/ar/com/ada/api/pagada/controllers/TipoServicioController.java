@@ -27,7 +27,7 @@ public class TipoServicioController {
     @PostMapping("/api/tipos-servicios")
     public ResponseEntity<GenericResponse> crearTipoServicio(@RequestBody TipoServicio tipo) {
         GenericResponse genericResponse = new GenericResponse();
-        // to do hacer que alguien cree el tipo de servicio
+
         boolean resultadoCreacion = servicioService.crearTipoServicio(tipo);
         if (resultadoCreacion) {
             genericResponse.isOk = true;

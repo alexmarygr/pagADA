@@ -71,4 +71,8 @@ public class ServicioService {
 
     }
 
+    public List<Servicio> listarServicios(){
+        return servicioRepo.findAll();
+    }
+
 }
