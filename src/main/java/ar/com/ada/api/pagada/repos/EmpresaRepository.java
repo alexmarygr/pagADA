@@ -7,4 +7,6 @@ import ar.com.ada.api.pagada.entities.Empresa;
 @Repository
 public interface EmpresaRepository extends JpaRepository<Empresa,Integer>{
 
+    Empresa findByEmpresaId(int empresaId);
+
 }

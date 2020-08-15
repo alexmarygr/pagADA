@@ -82,4 +82,8 @@ public class EmpresaService {
         NOMBRE_INVALIDO, // Nombre tenga algun problema
         ID_IMPOSITIVO_INVALIDO // ID impositivo tenga un problema
     }
+
+    public Empresa buscarEmpresaPorId(Integer empresaId){
+        return empresaRepository.findByEmpresaId((int) empresaId);
+    }
 }

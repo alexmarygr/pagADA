@@ -1,6 +1,7 @@
 package ar.com.ada.api.pagada.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,6 +67,15 @@ public class DeudorService {
         OK, // Cuando esta todo validado ok
         NOMBRE_INVALIDO, // Nombre tenga algun problema
         ID_IMPOSITIVO_INVALIDO // ID impositivo tenga un problema
+    }
+
+    public Deudor buscarDeudorPorId(Integer deudorId){
+        Optional <Deudor> oDeudor = deudorRepo.findById(deudorId);
+        if (oDeudor.isPresent()){
+            return oDeudor.get();
+        }else{
+            return null;
+        }
     }
 
 }

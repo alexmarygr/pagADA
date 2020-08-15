@@ -1,6 +1,7 @@
 package ar.com.ada.api.pagada.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,5 +29,14 @@ public class ServicioService {
         tSRepository.save(tipo);
 
         return true;
+    }
+
+    public TipoServicio buscarTipoServicioPorId(Integer tipoServicioId){
+        Optional<TipoServicio> oTipoServicio = tSRepository.findById(tipoServicioId);
+        if(oTipoServicio.isPresent()){
+            return oTipoServicio.get();
+        }else{
+            return null;
+        }
     }
 }
