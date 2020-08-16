@@ -116,7 +116,6 @@ public class ServicioController {
         pago.setMedioPago(pr.medioPago);
         pago.setInfoMedioPago(pr.infoMedioPago);
         pago.setMoneda(pr.moneda);
-        pago.setServicio(servicioPagado);
         servicioService.pagarServicio(servicioPagado, pago);
         if (pago.getPagoId() == null) {
             gr.isOk = false;

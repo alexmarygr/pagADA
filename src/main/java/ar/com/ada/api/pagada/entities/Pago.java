@@ -76,10 +76,9 @@ public class Pago {
     public Servicio getServicio() {
         return servicio;
     }
-    //relacion Bidireccional
+
     public void setServicio(Servicio servicio) {
         this.servicio = servicio;
-        servicio.setPago(this);
     }
 
     public String getMoneda() {

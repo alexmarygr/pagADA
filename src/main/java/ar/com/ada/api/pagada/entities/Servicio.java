@@ -40,8 +40,8 @@ public class Servicio {
     @Column(name = "estado_id")
     private EstadoEnum estadoId;
     @JsonIgnore
-    // Owner de la relacion
-    @OneToOne(mappedBy = "servicio", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    //Owner de la relacion
+    @OneToOne(mappedBy = "servicio", cascade = CascadeType.ALL,orphanRemoval = true)
     private Pago pago;
 
     public enum TipoComprobanteEnum {
@@ -141,7 +141,7 @@ public class Servicio {
     // Relacion bidireccional lo hago en pago
     public void setPago(Pago pago) {
         this.pago = pago; // le pongo el pago al servicio
-         // Le pongo el servicio al pago
+        pago.setServicio(this); // Le pongo el servicio al pago
     }
 
     public String getNumero() {

@@ -106,6 +106,7 @@ public class ServicioService {
     }
 
     public Pago pagarServicio(Servicio servicio, Pago pago) {
+        servicio.setPago(pago);
         servicio.setEstadoId(EstadoEnum.PAGADO);
         return pagoRepo.save(pago);
 
