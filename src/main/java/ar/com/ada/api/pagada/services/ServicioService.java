@@ -43,11 +43,11 @@ public class ServicioService {
         return true;
     }
 
-    public TipoServicio buscarTipoServicioPorId(Integer tipoServicioId){
+    public TipoServicio buscarTipoServicioPorId(Integer tipoServicioId) {
         Optional<TipoServicio> oTipoServicio = tSRepository.findById(tipoServicioId);
-        if(oTipoServicio.isPresent()){
+        if (oTipoServicio.isPresent()) {
             return oTipoServicio.get();
-        }else{
+        } else {
             return null;
         }
     }
@@ -77,38 +77,43 @@ public class ServicioService {
 
     }
 
-    public Servicio buscarServicioPorId(int servicioId){
+    public Servicio buscarServicioPorId(int servicioId) {
         return servicioRepo.findByServicioId(servicioId);
     }
 
-    public List<Servicio> listarServicios(){
+    public List<Servicio> listarServicios() {
         return servicioRepo.findAll();
     }
 
-	public List<Servicio> listarServiciosPorEmpresaId(Integer empresaId) {
-		return servicioRepo.findAllByEmpresaId(empresaId);
+    public List<Servicio> listarServiciosPorEmpresaId(Integer empresaId) {
+        return servicioRepo.findAllByEmpresaId(empresaId);
     }
-    
+
     public List<Servicio> listarServiciosPendientesPorEmpresaId(Integer empresaId) {
-		return servicioRepo.findAllPendientesByEmpresaId(empresaId);
-	}
-
-	public List<Servicio> PendientesPorEmpresaIdYDeudorId(Integer empresa, Integer deudor) {
-		return servicioRepo.findAllPendientesByEmpresaIdYDeudorId(empresa,deudor);
-    }
-    
-    public List<Servicio> historicoPorEmpresaIdYDeudorId(Integer empresaId, Integer deudorId){
-        return  servicioRepo.findAllEmpresaIdYDeudorId(empresaId,deudorId);
+        return servicioRepo.findAllPendientesByEmpresaId(empresaId);
     }
 
-	public List<Servicio> listarPorCodigoBarras(String codigoBarras) {
-		return servicioRepo.findAllByCodigoBarras(codigoBarras);
+    public List<Servicio> PendientesPorEmpresaIdYDeudorId(Integer empresa, Integer deudor) {
+        return servicioRepo.findAllPendientesByEmpresaIdYDeudorId(empresa, deudor);
     }
-    
-    public Pago pagarServicio(Servicio servicio,Pago pago){
+
+    public List<Servicio> historicoPorEmpresaIdYDeudorId(Integer empresaId, Integer deudorId) {
+        return servicioRepo.findAllEmpresaIdYDeudorId(empresaId, deudorId);
+    }
+
+    public List<Servicio> listarPorCodigoBarras(String codigoBarras) {
+        return servicioRepo.findAllByCodigoBarras(codigoBarras);
+    }
+
+    public Pago pagarServicio(Servicio servicio, Pago pago) {
         servicio.setEstadoId(EstadoEnum.PAGADO);
         return pagoRepo.save(pago);
 
+    }
+
+    public Servicio anularServicio(Servicio servicio) {
+        servicio.setEstadoId(EstadoEnum.ANULADO);
+        return servicioRepo.save(servicio);
     }
 
 }

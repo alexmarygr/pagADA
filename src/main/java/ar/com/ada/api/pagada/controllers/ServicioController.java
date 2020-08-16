@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ar.com.ada.api.pagada.entities.Pago;
 import ar.com.ada.api.pagada.entities.Servicio;
+import ar.com.ada.api.pagada.entities.Servicio.EstadoEnum;
 import ar.com.ada.api.pagada.models.request.ModificarServicioRequest;
 import ar.com.ada.api.pagada.models.request.PagarServicioRequest;
 import ar.com.ada.api.pagada.models.request.ServicioRequest;
@@ -147,6 +149,28 @@ public class ServicioController {
             return ResponseEntity.ok(gr);
         }
         
+    }
+
+
+    @DeleteMapping("/api/servicios/{id}")
+    public ResponseEntity<GenericResponse> anularServicio(@PathVariable int id){
+
+        GenericResponse gr = new GenericResponse();
+
+        Servicio servicio = servicioService.buscarServicioPorId(id);
+        servicioService.anularServicio(servicio);
+        
+        if(servicio.getEstadoId() != EstadoEnum.ANULADO){
+            gr.isOk = false;
+            gr.message = "Hubo un error al borrar el servicio.";
+            return ResponseEntity.badRequest().body(gr);
+        }else{
+            gr.isOk = true;
+            gr.id = servicio.getServicioId();
+            gr.message = "Servicio anulado correctamente.";
+            return ResponseEntity.ok(gr);
+        }
+
     }
 
 }
