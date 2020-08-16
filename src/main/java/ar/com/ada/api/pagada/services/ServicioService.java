@@ -117,4 +117,13 @@ public class ServicioService {
         return servicioRepo.save(servicio);
     }
 
+	public String acortarInfoMedioPago(String infoMP) {
+        String newInfo = new String();
+        newInfo = "*";
+        for (int i = (infoMP.length()-1) ; i > infoMP.length()-4 ; i--) {
+            newInfo = newInfo + infoMP.charAt(i);
+        }
+		return newInfo;
+	}
+
 }
