@@ -39,9 +39,9 @@ public class Servicio {
     private String codigoBarras;
     @Column(name = "estado_id")
     private EstadoEnum estadoId;
-
+    @JsonIgnore
     // Owner de la relacion
-    @OneToOne(mappedBy = "servicio", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "servicio", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Pago pago;
 
     public enum TipoComprobanteEnum {

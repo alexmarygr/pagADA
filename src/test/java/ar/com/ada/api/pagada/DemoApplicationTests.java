@@ -4,11 +4,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
+import java.util.*;
 import ar.com.ada.api.pagada.services.*;
 import ar.com.ada.api.pagada.services.DeudorService.DeudorValidacionEnum;
 import ar.com.ada.api.pagada.entities.*;
 import ar.com.ada.api.pagada.services.EmpresaService.EmpresaValidacionEnum;
+import ar.com.ada.api.pagada.services.ServicioService.ServicioValidacionEnum;
 import ar.com.ada.api.pagada.entities.Pais.*;
+import ar.com.ada.api.pagada.entities.Servicio.EstadoEnum;
+import ar.com.ada.api.pagada.entities.Servicio.TipoComprobanteEnum;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -18,6 +24,8 @@ class DemoApplicationTests {
 	EmpresaService empresaService;
 	@Autowired
 	DeudorService deudorService;
+	@Autowired
+	ServicioService servicioService;
 
 	@Test
 	void Empresa_IdImpositivo_QueFalle_ConLetras() {
@@ -159,6 +167,30 @@ class DemoApplicationTests {
 				deudor.getIdImpositivo(), deudor.getNombre());
 
 		assertTrue(resultado == DeudorValidacionEnum.NOMBRE_INVALIDO);
+
+	}
+
+	@Test
+	void Servicio_importe_invalido() {
+
+		Calendar calendario = GregorianCalendar.getInstance();
+		Date fecha = calendario.getTime();
+		Servicio servicio = new Servicio();
+		servicio.setEmpresa(empresaService.buscarEmpresaPorId(6));
+		servicio.setDeudor(deudorService.buscarDeudorPorId(5));
+		TipoServicio tipoServicioEncontrado = servicioService.buscarTipoServicioPorId(42);
+		servicio.setTipoServicio(tipoServicioEncontrado);
+        servicio.setTipoComprobante(TipoComprobanteEnum.FACTURA);
+        servicio.setNumero("20");
+        servicio.setFechaEmision(fecha);
+        servicio.setFechaVencimiento(fecha);
+        servicio.setImporte(new BigDecimal(-890.00));
+        servicio.setMoneda("ARS");
+        servicio.setCodigoBarras("678912343219876");
+		servicio.setEstadoId(EstadoEnum.PENDIENTE);
+		ServicioValidacionEnum resultado = servicioService.validarServicio(servicio);
+		
+		assertTrue(resultado == ServicioValidacionEnum.IMPORTE_INVALIDO);
 
 	}
 

@@ -15,7 +15,7 @@ public class TipoServicio {
     private Integer TipoServicioId;
     private String nombre;
     @JsonIgnore
-    @OneToMany(mappedBy = "tipoServicio", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "tipoServicio", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private List<Servicio> serviciosEmitidos = new ArrayList<>();
 
     public Integer getTipoServicioId() {
