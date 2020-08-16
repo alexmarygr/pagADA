@@ -6,12 +6,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ar.com.ada.api.pagada.entities.Pago;
 import ar.com.ada.api.pagada.entities.Servicio;
+import ar.com.ada.api.pagada.models.request.PayloadReuqest;
 import ar.com.ada.api.pagada.models.request.ServicioRequest;
 import ar.com.ada.api.pagada.models.response.GenericResponse;
 import ar.com.ada.api.pagada.services.DeudorService;
@@ -97,6 +100,31 @@ public class ServicioController {
         }
         return ResponseEntity.ok(servicios);
     }
+
+    @PostMapping("/api/servicios/{id}")
+    public ResponseEntity<GenericResponse> pagarServicioPorId(@PathVariable int id, @RequestBody PayloadReuqest pr) {
+        GenericResponse gr = new GenericResponse();
+        Servicio servicioPagado = servicioService.buscarServicioPorId(id);
+        Pago pago = new Pago();
+        pago.setImportePagado(pr.importePagado);
+        pago.setFechaPago(pr.fechaPago);
+        pago.setMedioPago(pr.medioPago);
+        pago.setInfoMedioPago(pr.infoMedioPago);
+        pago.setMoneda(pr.moneda);
+        pago.setServicio(servicioPagado);
+        servicioService.pagarServicio(servicioPagado,pago);
+        if(pago.getPagoId() == null){
+            gr.isOk = false;
+            gr.message = "No se pudo cargar el pago.";
+            return ResponseEntity.badRequest().body(gr);
+        }else{
+            gr.isOk = true;
+            gr.id = pago.getPagoId();
+            gr.message = "Pago cargado éxitosamente.";
+            return ResponseEntity.ok(gr);
+        }
+    }
+    
 
     
 

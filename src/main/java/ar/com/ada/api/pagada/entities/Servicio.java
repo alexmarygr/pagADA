@@ -41,7 +41,6 @@ public class Servicio {
     private EstadoEnum estadoId;
 
     // Owner de la relacion
-    @JsonIgnore
     @OneToOne(mappedBy = "servicio", cascade = CascadeType.ALL)
     private Pago pago;
 
@@ -139,10 +138,10 @@ public class Servicio {
         return pago;
     }
 
-    // Relacion bidireccional
+    // Relacion bidireccional lo hago en pago
     public void setPago(Pago pago) {
         this.pago = pago; // le pongo el pago al servicio
-        pago.setServicio(this); // Le pongo el servicio al pago
+         // Le pongo el servicio al pago
     }
 
     public String getNumero() {

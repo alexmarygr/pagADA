@@ -7,8 +7,11 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import ar.com.ada.api.pagada.entities.Pago;
 import ar.com.ada.api.pagada.entities.Servicio;
 import ar.com.ada.api.pagada.entities.TipoServicio;
+import ar.com.ada.api.pagada.entities.Servicio.EstadoEnum;
+import ar.com.ada.api.pagada.repos.PagoRepository;
 import ar.com.ada.api.pagada.repos.ServicioRepository;
 import ar.com.ada.api.pagada.repos.TipoServicioRepository;
 
@@ -20,6 +23,9 @@ public class ServicioService {
 
     @Autowired
     ServicioRepository servicioRepo;
+
+    @Autowired
+    PagoRepository pagoRepo;
 
     public List<TipoServicio> listarTipoServicios() {
 
@@ -71,6 +77,10 @@ public class ServicioService {
 
     }
 
+    public Servicio buscarServicioPorId(int servicioId){
+        return servicioRepo.findByServicioId(servicioId);
+    }
+
     public List<Servicio> listarServicios(){
         return servicioRepo.findAll();
     }
@@ -93,6 +103,12 @@ public class ServicioService {
 
 	public List<Servicio> listarPorCodigoBarras(String codigoBarras) {
 		return servicioRepo.findAllByCodigoBarras(codigoBarras);
-	}
+    }
+    
+    public Pago pagarServicio(Servicio servicio,Pago pago){
+        servicio.setEstadoId(EstadoEnum.PAGADO);
+        return pagoRepo.save(pago);
+
+    }
 
 }

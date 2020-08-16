@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "pago")
 public class Pago {
@@ -21,12 +23,13 @@ public class Pago {
     private MedioPagoEnum medioPago;
     @Column(name = "info_medio_pago")
     private String infoMedioPago;
-
+    private String moneda;
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "servicio_id", referencedColumnName = "servicio_id")
     private Servicio servicio;
 
-    private enum MedioPagoEnum {
+    public enum MedioPagoEnum {
         TARJETA, TRANSFERENCIA, DEPOSITO, ADADIGITAL
     }
 
@@ -73,8 +76,17 @@ public class Pago {
     public Servicio getServicio() {
         return servicio;
     }
-
+    //relacion Bidireccional
     public void setServicio(Servicio servicio) {
         this.servicio = servicio;
+        servicio.setPago(this);
+    }
+
+    public String getMoneda() {
+        return moneda;
+    }
+
+    public void setMoneda(String moneda) {
+        this.moneda = moneda;
     }
 }
