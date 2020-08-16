@@ -86,4 +86,5 @@ public class EmpresaService {
     public Empresa buscarEmpresaPorId(Integer empresaId){
         return empresaRepository.findByEmpresaId((int) empresaId);
     }
+
 }

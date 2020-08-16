@@ -1,5 +1,6 @@
 package ar.com.ada.api.pagada.controllers;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,17 +129,15 @@ public class ServicioController {
             return ResponseEntity.ok(gr);
         }
     }
-
+/*
     @PutMapping("/api/servicios/{id}")
     public ResponseEntity<GenericResponse> modificarImporteYVencimientoDeServicio(@PathVariable int id, @RequestBody ModificarServicioRequest mr) {
         GenericResponse gr = new GenericResponse();
-        Servicio servicioEncontrado = servicioService.buscarServicioPorId(id);
-        servicioEncontrado.setImporte(mr.importe);
-        servicioEncontrado.setFechaVencimiento(mr.vencimiento);
-        ServicioValidacionEnum validacionResultado = servicioService.validarServicio(servicioEncontrado);
-        if(validacionResultado != ServicioValidacionEnum.OK){
+        servicioService.buscarServicioPorId(id).setImporte(mr.importe);;
+        servicioService.buscarServicioPorId(id).setFechaVencimiento(mr.vencimiento);
+        if(mr.importe.compareTo(new BigDecimal(0)) <= 0){
             gr.isOk = false;
-            gr.message = "Hubo un error en la validacion del servicio" + validacionResultado;
+            gr.message = "Hubo un error en la validacion del servicio".
             return ResponseEntity.badRequest().body(gr);
         }else{
             servicioService.crearServicio(servicioEncontrado);
@@ -149,6 +148,7 @@ public class ServicioController {
         }
         
     }
+*/
 
 
     @DeleteMapping("/api/servicios/{id}")
