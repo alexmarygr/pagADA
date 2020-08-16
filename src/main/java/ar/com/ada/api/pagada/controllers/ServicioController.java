@@ -1,9 +1,7 @@
 package ar.com.ada.api.pagada.controllers;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,9 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import ar.com.ada.api.pagada.entities.Pago;
-import ar.com.ada.api.pagada.entities.Servicio;
+import ar.com.ada.api.pagada.entities.*;
 import ar.com.ada.api.pagada.entities.Servicio.EstadoEnum;
 import ar.com.ada.api.pagada.models.request.ModificarServicioRequest;
 import ar.com.ada.api.pagada.models.request.PagarServicioRequest;
@@ -25,7 +21,6 @@ import ar.com.ada.api.pagada.services.DeudorService;
 import ar.com.ada.api.pagada.services.EmpresaService;
 import ar.com.ada.api.pagada.services.ServicioService;
 import ar.com.ada.api.pagada.services.ServicioService.ServicioValidacionEnum;
-
 import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
@@ -129,26 +124,31 @@ public class ServicioController {
             return ResponseEntity.ok(gr);
         }
     }
-/*
+
     @PutMapping("/api/servicios/{id}")
     public ResponseEntity<GenericResponse> modificarImporteYVencimientoDeServicio(@PathVariable int id, @RequestBody ModificarServicioRequest mr) {
         GenericResponse gr = new GenericResponse();
-        servicioService.buscarServicioPorId(id).setImporte(mr.importe);;
-        servicioService.buscarServicioPorId(id).setFechaVencimiento(mr.vencimiento);
-        if(mr.importe.compareTo(new BigDecimal(0)) <= 0){
+        Servicio servicio = servicioService.buscarServicioPorId(id);
+        servicio.setImporte(mr.importe);
+        servicio.setFechaVencimiento(mr.vencimiento);
+
+        ServicioValidacionEnum resultado = servicioService.validarServicio(servicio);
+        
+        if(resultado != ServicioValidacionEnum.OK){
             gr.isOk = false;
-            gr.message = "Hubo un error en la validacion del servicio".
+            gr.message = "Hubo un error en la validacion del servicio";
             return ResponseEntity.badRequest().body(gr);
+
         }else{
-            servicioService.crearServicio(servicioEncontrado);
+            servicioService.crearServicio(servicio);
             gr.isOk = true;
-            gr.id = servicioEncontrado.getServicioId();
+            gr.id = servicio.getServicioId();
             gr.message = "Servicio modificado correctamente.";
             return ResponseEntity.ok(gr);
         }
         
     }
-*/
+
 
 
     @DeleteMapping("/api/servicios/{id}")
