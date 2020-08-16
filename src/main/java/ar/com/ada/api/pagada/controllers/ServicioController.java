@@ -14,13 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ar.com.ada.api.pagada.entities.Pago;
 import ar.com.ada.api.pagada.entities.Servicio;
-import ar.com.ada.api.pagada.models.request.PayloadReuqest;
+import ar.com.ada.api.pagada.models.request.ModificarServicioRequest;
+import ar.com.ada.api.pagada.models.request.PagarServicioRequest;
 import ar.com.ada.api.pagada.models.request.ServicioRequest;
 import ar.com.ada.api.pagada.models.response.GenericResponse;
 import ar.com.ada.api.pagada.services.DeudorService;
 import ar.com.ada.api.pagada.services.EmpresaService;
 import ar.com.ada.api.pagada.services.ServicioService;
 import ar.com.ada.api.pagada.services.ServicioService.ServicioValidacionEnum;
+
+import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 public class ServicioController {
@@ -35,7 +38,7 @@ public class ServicioController {
     DeudorService deudorService;
 
     @PostMapping("/api/servicios")
-    public ResponseEntity<GenericResponse> crearServicio(@RequestBody ServicioRequest sr){
+    public ResponseEntity<GenericResponse> crearServicio(@RequestBody ServicioRequest sr) {
 
         GenericResponse gr = new GenericResponse();
 
@@ -53,21 +56,21 @@ public class ServicioController {
         servicio.setEstadoId(sr.estadoId);
 
         ServicioValidacionEnum validacionResultado = servicioService.validarServicio(servicio);
-        if(validacionResultado != ServicioValidacionEnum.OK){
+        if (validacionResultado != ServicioValidacionEnum.OK) {
             gr.isOk = false;
-            gr.message = "Hubo un error en la validacion del servicio"  + validacionResultado;
+            gr.message = "Hubo un error en la validacion del servicio" + validacionResultado;
             return ResponseEntity.badRequest().body(gr);
         }
 
         servicioService.crearServicio(servicio);
-        //Quiero ver si en la base de datos se creó el id
-        if (servicio.getServicioId() == null){
+        // Quiero ver si en la base de datos se creó el id
+        if (servicio.getServicioId() == null) {
 
             gr.isOk = false;
             gr.message = "No se pudo crear el servicio";
             return ResponseEntity.badRequest().body(gr);
 
-        } else{
+        } else {
 
             gr.isOk = true;
             gr.id = servicio.getServicioId();
@@ -75,34 +78,34 @@ public class ServicioController {
             return ResponseEntity.ok(gr);
 
         }
-        
+
     }
 
-
     @GetMapping("/api/servicios")
-    public ResponseEntity<List<Servicio>> listarServicios( @RequestParam(name = "empresa", required = false) Integer empresa, 
-    @RequestParam(name = "deudor", required = false) Integer deudor,
-    @RequestParam(name = "historico", required = false) boolean historico,
-    @RequestParam(name = "codigo", required = false) String codigo){
-        
+    public ResponseEntity<List<Servicio>> listarServicios(
+            @RequestParam(name = "empresa", required = false) Integer empresa,
+            @RequestParam(name = "deudor", required = false) Integer deudor,
+            @RequestParam(name = "historico", required = false) boolean historico,
+            @RequestParam(name = "codigo", required = false) String codigo) {
+
         List<Servicio> servicios = new ArrayList<>();
 
-        if(codigo != null){
+        if (codigo != null) {
             servicios = servicioService.listarPorCodigoBarras(codigo);
-        }else if(empresa != null && deudor == null){
+        } else if (empresa != null && deudor == null) {
             servicios = servicioService.listarServiciosPendientesPorEmpresaId(empresa);
-        }else if(empresa != null && deudor != null && historico == false){
-            servicios = servicioService.PendientesPorEmpresaIdYDeudorId(empresa,deudor);
-        }else if (empresa != null && deudor != null && historico == true){
-            servicios = servicioService.historicoPorEmpresaIdYDeudorId(empresa,deudor);
-        }else{
+        } else if (empresa != null && deudor != null && historico == false) {
+            servicios = servicioService.PendientesPorEmpresaIdYDeudorId(empresa, deudor);
+        } else if (empresa != null && deudor != null && historico == true) {
+            servicios = servicioService.historicoPorEmpresaIdYDeudorId(empresa, deudor);
+        } else {
             servicios = servicioService.listarServicios();
         }
         return ResponseEntity.ok(servicios);
     }
 
     @PostMapping("/api/servicios/{id}")
-    public ResponseEntity<GenericResponse> pagarServicioPorId(@PathVariable int id, @RequestBody PayloadReuqest pr) {
+    public ResponseEntity<GenericResponse> pagarServicioPorId(@PathVariable int id, @RequestBody PagarServicioRequest pr) {
         GenericResponse gr = new GenericResponse();
         Servicio servicioPagado = servicioService.buscarServicioPorId(id);
         Pago pago = new Pago();
@@ -112,20 +115,38 @@ public class ServicioController {
         pago.setInfoMedioPago(pr.infoMedioPago);
         pago.setMoneda(pr.moneda);
         pago.setServicio(servicioPagado);
-        servicioService.pagarServicio(servicioPagado,pago);
-        if(pago.getPagoId() == null){
+        servicioService.pagarServicio(servicioPagado, pago);
+        if (pago.getPagoId() == null) {
             gr.isOk = false;
             gr.message = "No se pudo cargar el pago.";
             return ResponseEntity.badRequest().body(gr);
-        }else{
+        } else {
             gr.isOk = true;
             gr.id = pago.getPagoId();
             gr.message = "Pago cargado éxitosamente.";
             return ResponseEntity.ok(gr);
         }
     }
-    
 
-    
+    @PutMapping("/api/servicios/{id}")
+    public ResponseEntity<GenericResponse> modificarImporteYVencimientoDeServicio(@PathVariable int id, @RequestBody ModificarServicioRequest mr) {
+        GenericResponse gr = new GenericResponse();
+        Servicio servicioEncontrado = servicioService.buscarServicioPorId(id);
+        servicioEncontrado.setImporte(mr.importe);
+        servicioEncontrado.setFechaVencimiento(mr.vencimiento);
+        ServicioValidacionEnum validacionResultado = servicioService.validarServicio(servicioEncontrado);
+        if(validacionResultado != ServicioValidacionEnum.OK){
+            gr.isOk = false;
+            gr.message = "Hubo un error en la validacion del servicio" + validacionResultado;
+            return ResponseEntity.badRequest().body(gr);
+        }else{
+            servicioService.crearServicio(servicioEncontrado);
+            gr.isOk = true;
+            gr.id = servicioEncontrado.getServicioId();
+            gr.message = "Servicio modificado correctamente.";
+            return ResponseEntity.ok(gr);
+        }
+        
+    }
 
 }

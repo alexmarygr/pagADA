@@ -169,7 +169,7 @@ class DemoApplicationTests {
 		assertTrue(resultado == DeudorValidacionEnum.NOMBRE_INVALIDO);
 
 	}
-
+	//Importe negativo
 	@Test
 	void Servicio_importe_invalido() {
 
@@ -180,16 +180,16 @@ class DemoApplicationTests {
 		servicio.setDeudor(deudorService.buscarDeudorPorId(5));
 		TipoServicio tipoServicioEncontrado = servicioService.buscarTipoServicioPorId(42);
 		servicio.setTipoServicio(tipoServicioEncontrado);
-        servicio.setTipoComprobante(TipoComprobanteEnum.FACTURA);
-        servicio.setNumero("20");
-        servicio.setFechaEmision(fecha);
-        servicio.setFechaVencimiento(fecha);
-        servicio.setImporte(new BigDecimal(-890.00));
-        servicio.setMoneda("ARS");
-        servicio.setCodigoBarras("678912343219876");
+		servicio.setTipoComprobante(TipoComprobanteEnum.FACTURA);
+		servicio.setNumero("20");
+		servicio.setFechaEmision(fecha);
+		servicio.setFechaVencimiento(fecha);
+		servicio.setImporte(new BigDecimal(-890.00));
+		servicio.setMoneda("ARS");
+		servicio.setCodigoBarras("678912343219876");
 		servicio.setEstadoId(EstadoEnum.PENDIENTE);
 		ServicioValidacionEnum resultado = servicioService.validarServicio(servicio);
-		
+
 		assertTrue(resultado == ServicioValidacionEnum.IMPORTE_INVALIDO);
 
 	}
