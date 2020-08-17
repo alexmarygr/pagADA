@@ -11,13 +11,14 @@ import ar.com.ada.api.pagada.entities.Empresa;
 import ar.com.ada.api.pagada.entities.Pago;
 import ar.com.ada.api.pagada.entities.Servicio;
 import ar.com.ada.api.pagada.models.response.PagoResponse;
-import ar.com.ada.api.pagada.repos.PagoRepository;
+import ar.com.ada.api.pagada.repos.*;
 
 @Service
 public class PagoService {
 
     @Autowired
-    PagoRepository pagoRepo;
+    ServicioRepository servicioRepository;
+    
 
     public String acortarInfoMedioPago(String infoMP) {
         String newInfo = new String();

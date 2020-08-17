@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ar.com.ada.api.pagada.entities.*;
 import ar.com.ada.api.pagada.entities.Servicio.EstadoEnum;
 import ar.com.ada.api.pagada.models.request.ModificarServicioRequest;
-import ar.com.ada.api.pagada.models.request.PagarServicioRequest;
+import ar.com.ada.api.pagada.models.request.InfoPagoRequest;
 import ar.com.ada.api.pagada.models.request.ServicioRequest;
 import ar.com.ada.api.pagada.models.response.GenericResponse;
 import ar.com.ada.api.pagada.services.DeudorService;
@@ -92,9 +92,9 @@ public class ServicioController {
             servicios = servicioService.listarPorCodigoBarras(codigo);
         } else if (empresa != null && deudor == null) {
             servicios = servicioService.listarServiciosPendientesPorEmpresaId(empresa);
-        } else if (empresa != null && deudor != null && historico == false) {
+        } else if (empresa != null && deudor != null && !historico) {
             servicios = servicioService.PendientesPorEmpresaIdYDeudorId(empresa, deudor);
-        } else if (empresa != null && deudor != null && historico == true) {
+        } else if (empresa != null && deudor != null && historico) {
             servicios = servicioService.historicoPorEmpresaIdYDeudorId(empresa, deudor);
         } else {
             servicios = servicioService.listarServicios();
@@ -103,67 +103,90 @@ public class ServicioController {
     }
 
     @PostMapping("/api/servicios/{id}")
-    public ResponseEntity<GenericResponse> pagarServicioPorId(@PathVariable int id, @RequestBody PagarServicioRequest pr) {
-        GenericResponse gr = new GenericResponse();
-        Servicio servicioPagado = servicioService.buscarServicioPorId(id);
-        Pago pago = new Pago();
-        pago.setImportePagado(pr.importePagado);
-        pago.setFechaPago(pr.fechaPago);
-        pago.setMedioPago(pr.medioPago);
-        pago.setInfoMedioPago(pr.infoMedioPago);
-        pago.setMoneda(pr.moneda);
-        servicioService.pagarServicio(servicioPagado, pago);
-        if (pago.getPagoId() == null) {
-            gr.isOk = false;
-            gr.message = "No se pudo cargar el pago.";
-            return ResponseEntity.badRequest().body(gr);
-        } else {
-            gr.isOk = true;
-            gr.id = pago.getPagoId();
-            gr.message = "Pago cargado éxitosamente.";
-            return ResponseEntity.ok(gr);
+    public ResponseEntity<GenericResponse> pagarServicioPorId(@PathVariable Integer id,
+            @RequestBody InfoPagoRequest pr) {
+        GenericResponse r = new GenericResponse();
+        OperacionPago pagoResult = servicioService.realizarPago(id, pr.importePagado, pr.fechaPago, pr.medioPago,
+                pr.infoMedioPago, pr.moneda);
+
+        switch (pagoResult.getResultado()) {
+            case RECHAZADO_NO_ACEPTA_PAGO_PARCIAL:
+                r.isOk = false;
+                r.message = "No acepta pago parcial";
+
+                return ResponseEntity.badRequest().body(r);
+
+            case RECHAZADO_SERVICIO_INEXISTENTE:
+
+                r.isOk = false;
+                r.message = "Servicio inexistente";
+
+                return ResponseEntity.badRequest().body(r);
+
+            case RECHAZADO_SERVICIO_YA_PAGO:
+
+                r.isOk = false;
+                r.message = "Servicio ya pago";
+
+                return ResponseEntity.badRequest().body(r);
+
+            case ERROR_INESPERADO:
+
+                r.isOk = false;
+                r.message = "Error inesperado";
+
+                return ResponseEntity.badRequest().body(r);
+
+            case REALIZADO:
+
+                r.isOk = true;
+                r.id = pagoResult.getPago().getPagoId();
+                r.message = "se realizo el pago con exito";
+                return ResponseEntity.ok(r);
         }
+        return ResponseEntity.badRequest().build();
     }
 
+    
+
     @PutMapping("/api/servicios/{id}")
-    public ResponseEntity<GenericResponse> modificarImporteYVencimientoDeServicio(@PathVariable int id, @RequestBody ModificarServicioRequest mr) {
+    public ResponseEntity<GenericResponse> modificarImporteYVencimientoDeServicio(@PathVariable int id,
+            @RequestBody ModificarServicioRequest mr) {
         GenericResponse gr = new GenericResponse();
         Servicio servicio = servicioService.buscarServicioPorId(id);
         servicio.setImporte(mr.importe);
         servicio.setFechaVencimiento(mr.vencimiento);
 
         ServicioValidacionEnum resultado = servicioService.validarServicio(servicio);
-        
-        if(resultado != ServicioValidacionEnum.OK){
+
+        if (resultado != ServicioValidacionEnum.OK) {
             gr.isOk = false;
             gr.message = "Hubo un error en la validacion del servicio";
             return ResponseEntity.badRequest().body(gr);
 
-        }else{
+        } else {
             servicioService.crearServicio(servicio);
             gr.isOk = true;
             gr.id = servicio.getServicioId();
             gr.message = "Servicio modificado correctamente.";
             return ResponseEntity.ok(gr);
         }
-        
+
     }
 
-
-
     @DeleteMapping("/api/servicios/{id}")
-    public ResponseEntity<GenericResponse> anularServicio(@PathVariable int id){
+    public ResponseEntity<GenericResponse> anularServicio(@PathVariable int id) {
 
         GenericResponse gr = new GenericResponse();
 
         Servicio servicio = servicioService.buscarServicioPorId(id);
         servicioService.anularServicio(servicio);
-        
-        if(servicio.getEstadoId() != EstadoEnum.ANULADO){
+
+        if (servicio.getEstadoId() != EstadoEnum.ANULADO) {
             gr.isOk = false;
             gr.message = "Hubo un error al borrar el servicio.";
             return ResponseEntity.badRequest().body(gr);
-        }else{
+        } else {
             gr.isOk = true;
             gr.id = servicio.getServicioId();
             gr.message = "Servicio anulado correctamente.";
