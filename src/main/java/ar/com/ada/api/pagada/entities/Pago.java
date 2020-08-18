@@ -88,4 +88,10 @@ public class Pago {
     public void setMoneda(String moneda) {
         this.moneda = moneda;
     }
+
+    public String ofuscarInfoMedioPago(){
+        int longitud = this.getInfoMedioPago().length();
+        String infoOfuscada = this.getInfoMedioPago().substring(longitud - 3);
+        return "*" + infoOfuscada; 
+    }
 }
