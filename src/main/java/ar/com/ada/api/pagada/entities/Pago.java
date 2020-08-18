@@ -7,6 +7,8 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import ar.com.ada.api.pagada.models.response.PagoResponse;
+
 @Entity
 @Table(name = "pago")
 public class Pago {
@@ -89,9 +91,26 @@ public class Pago {
         this.moneda = moneda;
     }
 
-    public String ofuscarInfoMedioPago(){
+    public String ofuscarInfoMedioPago() {
         int longitud = this.getInfoMedioPago().length();
         String infoOfuscada = this.getInfoMedioPago().substring(longitud - 3);
-        return "*" + infoOfuscada; 
+        return "*" + infoOfuscada;
+    }
+
+    public PagoResponse convertirAPagoResponse() {
+
+        PagoResponse pagoResponse = new PagoResponse();
+
+        pagoResponse.empresa_id = this.getServicio().getEmpresa().getEmpresaId();
+        pagoResponse.nombre_empresa = this.getServicio().getEmpresa().getNombre();
+        pagoResponse.deudor_id = this.getServicio().getDeudor().getDeudorId();
+        pagoResponse.nombre_deudor = this.getServicio().getDeudor().getNombre();
+        pagoResponse.comprobanteDePago = this.getPagoId();
+        pagoResponse.fecha = this.getFechaPago();
+        pagoResponse.importePagado = this.getImportePagado();
+        pagoResponse.medioPago = this.getMedioPago();
+        pagoResponse.infoMedioPago = this.ofuscarInfoMedioPago();
+        
+        return pagoResponse;
     }
 }

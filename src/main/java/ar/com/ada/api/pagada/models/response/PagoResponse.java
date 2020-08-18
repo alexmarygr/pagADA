@@ -14,5 +14,5 @@ public class PagoResponse {
     public Date fecha;
 	public BigDecimal importePagado;
     public MedioPagoEnum medioPago;
-	public String infoMedioPago;
+    public String infoMedioPago;
 }

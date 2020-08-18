@@ -28,6 +28,5 @@ public class OperacionPago {
     public void setPago(Pago pago) {
         this.pago = pago;
     }
-    
 
 }
