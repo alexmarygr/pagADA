@@ -8,9 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-
 import ar.com.ada.api.pagada.entities.Pago;
 import ar.com.ada.api.pagada.services.ServicioService;
+import ar.com.ada.api.pagada.models.response.GenericResponse;
 import ar.com.ada.api.pagada.models.response.PagoResponse;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,9 +24,18 @@ public class PagoController {
     ServicioService servicioService;
 
     @GetMapping("/api/pagos/{id}")
-    public ResponseEntity<PagoResponse> buscarPago(@PathVariable Integer id) {
+    public ResponseEntity<?> buscarPago(@PathVariable Integer id) {
         
         Pago pago = servicioService.buscarPagoPorId(id);
+        GenericResponse genericResponse = new GenericResponse();
+
+        if(pago == null){
+
+            genericResponse.isOk = false;
+            genericResponse.message = "No se encontro el pago.";
+
+            return ResponseEntity.badRequest().body(genericResponse);
+        }
 
         PagoResponse pagoResponse = new PagoResponse();
         pagoResponse = pago.convertirAPagoResponse();

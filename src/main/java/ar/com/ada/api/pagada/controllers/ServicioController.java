@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ar.com.ada.api.pagada.entities.*;
 import ar.com.ada.api.pagada.entities.Servicio.EstadoEnum;
-import ar.com.ada.api.pagada.models.request.ModificarServicioRequest;
+import ar.com.ada.api.pagada.models.request.ActualizarServicioRequest;
 import ar.com.ada.api.pagada.models.request.InfoPagoRequest;
 import ar.com.ada.api.pagada.models.request.ServicioRequest;
 import ar.com.ada.api.pagada.models.response.GenericResponse;
@@ -147,12 +147,12 @@ public class ServicioController {
         return ResponseEntity.badRequest().build();
     }
 
-    
-
     @PutMapping("/api/servicios/{id}")
-    public ResponseEntity<GenericResponse> modificarImporteYVencimientoDeServicio(@PathVariable int id,
-            @RequestBody ModificarServicioRequest mr) {
+    public ResponseEntity<GenericResponse> actualizarServicio(@PathVariable Integer id,
+            @RequestBody ActualizarServicioRequest mr) {
+
         GenericResponse gr = new GenericResponse();
+
         Servicio servicio = servicioService.buscarServicioPorId(id);
         servicio.setImporte(mr.importe);
         servicio.setFechaVencimiento(mr.vencimiento);
@@ -161,14 +161,14 @@ public class ServicioController {
 
         if (resultado != ServicioValidacionEnum.OK) {
             gr.isOk = false;
-            gr.message = "Hubo un error en la validacion del servicio";
+            gr.message = "Hubo un error en la validacion del servicio "+ resultado;
             return ResponseEntity.badRequest().body(gr);
 
         } else {
-            servicioService.crearServicio(servicio);
+            servicioService.grabar(servicio);
             gr.isOk = true;
             gr.id = servicio.getServicioId();
-            gr.message = "Servicio modificado correctamente.";
+            gr.message = "Servicio actualizado correctamente.";
             return ResponseEntity.ok(gr);
         }
 
