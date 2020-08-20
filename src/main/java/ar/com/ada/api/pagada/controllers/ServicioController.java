@@ -3,6 +3,7 @@ package ar.com.ada.api.pagada.controllers;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -154,6 +155,15 @@ public class ServicioController {
         GenericResponse gr = new GenericResponse();
 
         Servicio servicio = servicioService.buscarServicioPorId(id);
+
+        if (servicio == null){
+            gr.isOk = false;
+            gr.message = "Servicio no encontrado.";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(gr);
+            
+
+        }
+
         servicio.setImporte(mr.importe);
         servicio.setFechaVencimiento(mr.vencimiento);
 
@@ -175,11 +185,28 @@ public class ServicioController {
     }
 
     @DeleteMapping("/api/servicios/{id}")
-    public ResponseEntity<GenericResponse> anularServicio(@PathVariable int id) {
+    public ResponseEntity<GenericResponse> anularServicio(@PathVariable Integer id) {
 
         GenericResponse gr = new GenericResponse();
 
         Servicio servicio = servicioService.buscarServicioPorId(id);
+
+        if (servicio == null){
+            gr.isOk = false;
+            gr.message = "Servicio no encontrado.";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(gr);// Error http 404
+            
+
+        }
+
+        if (servicio.getEstadoId() == EstadoEnum.PAGADO) {
+            gr.isOk = false;
+            gr.id = servicio.getServicioId();
+            gr.message = "No se puede anular un servicio pago";
+
+            return ResponseEntity.badRequest().body(gr); // Error http 400
+        }
+
         servicioService.anularServicio(servicio);
 
         if (servicio.getEstadoId() != EstadoEnum.ANULADO) {

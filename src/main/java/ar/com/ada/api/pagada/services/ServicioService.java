@@ -123,7 +123,7 @@ public class ServicioService {
 
     public Servicio anularServicio(Servicio servicio) {
         servicio.setEstadoId(EstadoEnum.ANULADO);
-        return servicioRepo.save(servicio);
+        return this.grabar(servicio);
     }
 
 	public OperacionPago realizarPago(Integer servicioId, BigDecimal importePagado, Date fechaPago, MedioPagoEnum medioPago,
